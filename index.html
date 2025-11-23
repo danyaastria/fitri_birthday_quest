@@ -357,8 +357,8 @@ look for the place where stories play in frames.`,
             message: "Walk to our main activity!",
             movement: {
                 path: [
-                    { x: 5,  y: 50 },
-                    { x: 50, y: 66 }
+                    { x: 25,  y: 50 },
+                    { x: 80, y: 60 }
                 ],
                 duration: 2000
             },
@@ -380,9 +380,10 @@ What’s the next magic step?`,
             answer: "Paint"
         },
         map: {
-            img: "images/stage1_blk546.png",
+            img: "images/level5_toOrchardCentral.png",
             movement: {
-                path: [ {x: 10, y: 50}, {x: 50, y: 50} ],
+                path: [ {x: 90, y: 50}, 
+                        {x: 30, y: 40} ],
                 duration: 2000
             },
             zoom: "in",
@@ -405,9 +406,10 @@ What hidden mark do both our pottery cups have?`,
             answer: "D+F" // accept "F+D" as alternate in code if needed
         },
         map: {
-            img: "images/stage1_blk546.png",
+            img: "images/level6_toBoredTacos.png",
             movement: {
-                path: [ {x: 10, y: 50}, {x: 50, y: 50} ],
+                path: [ {x: 10, y: 50}, 
+                        {x: 87, y: 30} ],
                 duration: 2000
             },
             zoom: "in",
@@ -431,9 +433,10 @@ quietly returns to rest.`,
             answer: "Binjai"
         },
         map: {
-            img: "images/stage1_blk546.png",
+            img: "images/level7_toBinjai.png",
             movement: {
-                path: [ {x: 10, y: 50}, {x: 50, y: 50} ],
+                path: [ {x: 80, y: 65}, 
+                        {x: 20, y: 45} ],
                 duration: 2000
             },
             zoom: "in",
@@ -450,7 +453,7 @@ quietly returns to rest.`,
       id: 8,
       title: "🎁 LEVEL 8: Mystery Awaits",
       map: {
-          img: "images/stage1_blk546.png",
+          img: "images/level8_Binjai.png",
           movement: {
               path: [ {x: 10, y: 50}, {x: 50, y: 50} ],
               duration: 2000
@@ -479,7 +482,7 @@ function loadIntro() {
             <img src="images/herface.jpeg" alt="sprite">
             <h1>Good morning, birthday girl 💙</h1>
             <div id="intro-text">
-Today is your day — your 22nd birthday.
+You turned 22 on 22! Happy belated birthday🎉
 But instead of a normal celebration…
 
 We're doing a little adventure game.
@@ -608,31 +611,68 @@ function playMapAnimation(stage) {
     const sprite = document.getElementById("sprite");
 
     if (!stage.map.movement) {
-        // no movement → just show hotspot
+        // no movement → just show hotspot at sprite position
         setTimeout(() => {
-            showHotspot(stage.map.hotspot);
+            showHotspotBelowSprite(sprite, stage.map.hotspot);
         }, 1200);
         return;
     }
 
-    // Start position (first path coordinate)
     const start = stage.map.movement.path[0];
+    const end = stage.map.movement.path[1];
+
+    // Set start position
     sprite.style.left = start.x + "%";
     sprite.style.top = start.y + "%";
 
-    // End position (last path coordinate)
-    const end = stage.map.movement.path[1];
+    // Slower movement: increase duration if needed
+    const duration = stage.map.movement.duration + 1000;
+    sprite.style.transition = `all ${duration}ms ease`;
 
+    // Move sprite to end position
     setTimeout(() => {
-        sprite.style.transition = `all ${stage.map.movement.duration}ms ease`;
         sprite.style.left = end.x + "%";
         sprite.style.top = end.y + "%";
-    }, 300);
+    }, 100);
 
-    // Show hotspot after movement finishes
+    // Show hotspot **after sprite finishes moving**
     setTimeout(() => {
-        showHotspot(stage.map.hotspot);
-    }, stage.map.movement.duration + 500);
+        showHotspotBelowSprite(sprite, stage.map.hotspot);
+    }, duration + 150); // slightly after transition
+}
+
+function showHotspotBelowSprite(sprite, loc) {
+    const mapContainer = document.getElementById("map-container");
+
+    const hotspot = document.createElement("div");
+    hotspot.classList.add("hotspot");
+
+    // Get sprite final position
+    const spriteRect = sprite.getBoundingClientRect();
+    const containerRect = mapContainer.getBoundingClientRect();
+
+    // Calculate position relative to container
+    const leftPercent = ((spriteRect.left + spriteRect.width/2 - containerRect.left) / containerRect.width) * 100;
+
+    // Add extra offset downward (e.g., 15% of sprite height)
+    const offset = 18; 
+    const topPercent = ((spriteRect.top + spriteRect.height - containerRect.top) / containerRect.height) * 100 + (offset * spriteRect.height / containerRect.height);
+
+    hotspot.style.left = `${leftPercent}%`;
+    hotspot.style.top = `${topPercent}%`;
+    hotspot.textContent = loc.label;
+
+    hotspot.addEventListener("click", () => {
+        window.open(loc.link, "_blank");
+    });
+
+    mapContainer.appendChild(hotspot);
+
+    // Next button
+    const nextButton = document.createElement("button");
+    nextButton.textContent = "Go to Next Level ➜";
+    nextButton.onclick = goNextStage;
+    container.appendChild(nextButton);
 }
 
 function goNextStage() {
@@ -649,12 +689,14 @@ function showHotspot(loc) {
 
     const hotspot = document.createElement("div");
     hotspot.classList.add("hotspot");
+
+    // Position label below the sprite
     hotspot.style.left = loc.x + "%";
-    hotspot.style.top = loc.y + "%";
+    hotspot.style.top = `calc(${loc.y}% + 20px)`; // 20px below sprite, adjust if needed
     hotspot.textContent = loc.label;
 
     hotspot.addEventListener("click", () => {
-    window.open(loc.link, "_blank");
+        window.open(loc.link, "_blank");
     });
 
     mapContainer.appendChild(hotspot);
@@ -663,7 +705,6 @@ function showHotspot(loc) {
     nextButton.textContent = "Go to Next Level ➜";
     nextButton.onclick = goNextStage;
     container.appendChild(nextButton);
-
 }
 
 // ---------------------------
@@ -677,7 +718,7 @@ function loadEndingScreen() {
         <div id="ending-screen">
             <h1>🎉 Quest Completed!</h1>
             <p>You cleared all 7 levels.<br>
-            You travelled, solved riddles, collected items — and hopefully had fun.</p>
+            You travelled, solved riddles, completed activities.</p>
 
             <p style="margin-top:15px;">Rate your birthday quest ⭐</p>
 
@@ -687,7 +728,7 @@ function loadEndingScreen() {
                 ).join("")}
             </div>
 
-            <textarea id="review-box" placeholder="Leave a comment (optional)…"></textarea><br>
+            <textarea id="review-box" placeholder="Leave a sweet comment if you want kiss"></textarea><br>
 
             <button id="submit-review" onclick="submitReview()">Submit Review</button>
         </div>
