@@ -9,7 +9,7 @@
 body {
     margin: 0;
     padding: 0;
-    font-family: Arial, sans-serif;
+    font-family: "Arial", sans-serif;
     background: #d0e7f9;
     display: flex;
     justify-content: center;
@@ -27,35 +27,65 @@ body {
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 
-h2 { font-size: 20px; margin-bottom: 10px; }
+h2 { 
+    font-size: 20px;
+    margin-bottom: 10px;
+}
 
 .riddle-text {
-    white-space: pre-line; /* preserve line breaks */
+    white-space: pre-line;
     font-size: 16px;
     margin: 15px 0;
     line-height: 1.4;
 }
 
-.items { display: flex; justify-content: space-around; margin-top: 15px; flex-wrap: wrap; }
-.item { font-size: 35px; cursor: pointer; margin: 5px; transition: transform 0.2s; }
-.item:hover { transform: scale(1.2); }
+/* Items */
+.items { 
+    display: flex; 
+    justify-content: space-around; 
+    margin-top: 15px; 
+    flex-wrap: wrap; 
+}
+.item { 
+    font-size: 40px; 
+    cursor: pointer; 
+    margin: 5px; 
+    transition: transform 0.2s; 
+}
+.item:hover { transform: scale(1.15); }
 
-#checklist { font-weight: bold; margin-top: 10px; font-size: 16px; }
+#checklist { 
+    font-weight: bold; 
+    margin-top: 10px; 
+    font-size: 16px; 
+}
 
-input[type="text"] { padding: 6px; font-size: 16px; width: 90%; border-radius: 6px; border: 1px solid #ccc; margin-top: 10px; }
+/* Inputs */
+input[type="text"] {
+    padding: 10px;
+    font-size: 16px;
+    width: 90%;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    margin-top: 10px;
+}
 
+/* Buttons */
 button {
     padding: 12px 20px;
     font-size: 16px;
-    margin-top: 10px;
+    margin-top: 15px;
     cursor: pointer;
     border: none;
     border-radius: 8px;
-    background: #a7d0f5;
+    background: #9ccbf4;
     color: #fff;
     transition: 0.2s;
 }
-button:hover { background: #87c6f4; transform: scale(1.05); }
+button:hover { 
+    background: #77b6f2; 
+    transform: scale(1.05); 
+}
 
 /* Map Interface */
 #map-container {
@@ -66,13 +96,33 @@ button:hover { background: #87c6f4; transform: scale(1.05); }
     width: 100%;
     border-radius: 10px;
 }
+
 .map-marker {
     position: absolute;
     cursor: pointer;
-    font-size: 30px;
-    transition: transform 0.2s;
+    font-size: 28px;
+    padding: 8px 12px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+    transform: translate(-50%, -50%);
 }
-.map-marker:hover { transform: scale(1.3); }
+.map-marker:active {
+    transform: translate(-50%, -50%) scale(0.95);
+}
+
+/* Sprite */
+#sprite {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border-radius: 999px;
+    border: 3px solid white;
+    box-shadow: 0 0 8px rgba(0,0,0,0.4);
+    left: -80px; /* offscreen */
+    top: 45%;
+    transition: left 1.8s ease-in-out;
+}
 </style>
 </head>
 <body>
@@ -180,74 +230,136 @@ quietly returns to rest.`,
         review: true
     }
 ];
+
 let currentStage = 0;
 const container = document.getElementById("game-container");
 
-function loadStage(stageIndex) {
-    const stage = stages[stageIndex];
+/* -----------------------------
+     LOAD A STAGE
+------------------------------*/
+function loadStage(i) {
+    const stage = stages[i];
     container.innerHTML = `<h2>${stage.title}</h2>`;
 
-    if(stage.items){
-        container.innerHTML += `<div class="items"></div><div id="checklist">Collected: 0/${stage.items.length}</div>`;
+    if (stage.items) {
+        container.innerHTML += `
+            <div class="items"></div>
+            <div id="checklist">Collected: 0/${stage.items.length}</div>
+        `;
+        
         const itemsDiv = container.querySelector(".items");
         let collected = 0;
+
         stage.items.forEach(emoji => {
             const span = document.createElement("span");
             span.classList.add("item");
             span.textContent = emoji;
+
             span.onclick = () => {
                 span.style.visibility = "hidden";
                 collected++;
-                document.getElementById("checklist").textContent = `Collected: ${collected}/${stage.items.length}`;
-                if(collected === stage.items.length) showRiddle(stage.riddle);
+                document.getElementById("checklist").textContent = 
+                    `Collected: ${collected}/${stage.items.length}`;
+
+                if (collected === stage.items.length) showRiddle(stage.riddle);
             };
+
             itemsDiv.appendChild(span);
         });
+
     } else {
         showRiddle(stage.riddle);
     }
 }
 
-function showRiddle(riddle){
-    container.innerHTML += `<div class="riddle-text">${riddle.question}</div>
+/* -----------------------------
+     RIDDLE
+------------------------------*/
+function showRiddle(riddle) {
+    container.innerHTML += `
+        <div class="riddle-text">${riddle.question}</div>
         <input type="text" id="answer" placeholder="Your answer">
-        <br><button onclick="checkAnswer()">Submit</button>
-        <p id="feedback"></p>`;
+        <button onclick="checkAnswer()">Submit</button>
+        <p id="feedback"></p>
+    `;
 }
 
-function checkAnswer(){
+function checkAnswer() {
+    const user = document.getElementById("answer").value.trim();
     const riddle = stages[currentStage].riddle;
-    const input = document.getElementById("answer").value.trim();
     const feedback = document.getElementById("feedback");
-    if(input.toLowerCase() === riddle.answer.toLowerCase()){
-        feedback.textContent = "Correct! ✅";
+
+    if (user.toLowerCase() === riddle.answer.toLowerCase()) {
+        feedback.textContent = "Correct! 🎉";
         showMap(stages[currentStage].map);
     } else {
-        feedback.textContent = "Try again ❌";
+        feedback.textContent = "Try again ❤️";
     }
 }
 
-function showMap(mapData){
-    container.innerHTML = `<h2>Map - Stage ${currentStage + 1}</h2>
+/* -----------------------------
+     MAP + SPRITE SLIDE
+------------------------------*/
+
+function showMap(mapData) {
+    container.innerHTML = `
+        <h2>Map Unlocked!</h2>
         <div id="map-container">
             <img src="${mapData.img}">
+            <img id="sprite" src="images/herface.jpeg">
         </div>
-        <p>Click on the next stage to unlock it!</p>`;
+        <p>Driving to the next location…</p>
+    `;
 
-    const mapContainer = document.getElementById("map-container");
-    const marker = document.createElement("div");
-    marker.classList.add("map-marker");
-    marker.textContent = mapData.nextLocation.label;
-    marker.style.top = mapData.nextLocation.top;
-    marker.style.left = mapData.nextLocation.left;
-    marker.onclick = () => window.open(mapData.nextLocation.link, "_blank");
+    const sprite = document.getElementById("sprite");
 
-    mapContainer.appendChild(marker);
+    setTimeout(() => {
+        sprite.style.left = mapData.nextLocation.left;
+    }, 300);
+
+    sprite.addEventListener("transitionend", () => {
+        showMapMarker(mapData);
+    });
 }
 
-// Load first stage
+function showMapMarker(mapData) {
+    const mapContainer = document.getElementById("map-container");
+
+    // Create marker
+    const marker = document.createElement("div");
+    marker.classList.add("map-marker");
+
+    // Position
+    marker.style.top = mapData.nextLocation.top;
+    marker.style.left = mapData.nextLocation.left;
+
+    // Label
+    marker.textContent = mapData.nextLocation.label;
+
+    // FIX: iOS-safe navigation
+    marker.onclick = () => {
+        window.location.href = mapData.nextLocation.link;
+    };
+
+    mapContainer.appendChild(marker);
+
+    // Add next stage button *outside the map container*
+    const nextButton = document.createElement("button");
+    nextButton.textContent = "Go to Next Stage ➜";
+    nextButton.onclick = goNextStage;
+
+    container.appendChild(nextButton);
+}
+
+
+function goNextStage() {
+    currentStage++;
+    loadStage(currentStage);
+}
+
 loadStage(currentStage);
 </script>
 
 </body>
 </html>
+
