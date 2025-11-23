@@ -1,0 +1,118 @@
+#######################################
+🌅 STAGE 1 — Wake Up Quest (10:00 AM)
+#######################################
+
+Objective: Tap/collect 4 items:
+🪥 Toothbrush
+👕 Clothes
+⌚ Watch
+👟 Shoes
+
+Game logic idea:
+Show a checklist UI: 0/4 items collected
+Items disappear after tap
+When all items collected → trigger cutscene + riddle
+
+Riddle 1: “Time Jumps”
+“Today, the calendar loops back to your origin.
+A repeating number, a mirrored clue —
+What age are you stepping into?”
+
+Answer: 22
+
+Reward:
+Unlock path to the motorbike in the carpark
+Transition to Stage 2
+
+#######################################
+🏍️ STAGE 2 — Motorbike Meet-Up
+#######################################
+
+At her bike, she finds you (girlfriend) waiting.
+
+Riddle 2: “Love Wins”
+
+“Some milestones are historic,
+and some moments are just ours.
+Can you name the first Asian country
+that legalized love for all?”
+
+Answer: Taiwan ✅
+
+Reward: Unlock Stage 3 (Brunch @ Da Xi, Plaza Sing)
+
+#######################################
+🍜 STAGE 3 — Brunch @ Da Xi, Plaza Sing
+#######################################
+
+“Where movies come alive on a silver screen,
+and laughter echoes in the cozy cinema scene.
+Just steps away from our brunch,
+look for the place where stories play in frames.”
+
+Answer: The Cathay
+
+Reward: Unlock Stage 4: Pottery session
+
+#######################################
+🎨 STAGE 4 — 1:00 PM Pottery at CocoArt (The Cathay)
+#######################################
+
+You two do your pottery session.
+
+Riddle 4: “What Comes After Clay?”
+
+Simple and cute:
+
+“Clay is shaped by touch…
+but what gives it colour, life, and identity?
+What’s the next magic step?”
+
+Answer: Paint
+
+Reward:
+
+Unlock Stage 5 (Orchard Central)
+
+#######################################
+🏺 STAGE 5 — “am i addicted” (Orchard Central) — 4PM
+#######################################
+
+You two collect your previously made pottery.
+
+Riddle 5: “Twin Markings”
+
+This riddle references your couple initials.
+
+“The cups look different — shapes, glaze, lines…
+but there’s one thing they’ll always share.
+What hidden mark do both our pottery cups have?”
+
+Answer: D+F
+
+Reward: Unlock Stage 6: Dinner
+
+#######################################
+🍗 STAGE 6 — Dinner @ Bored Tacos, Joo Chiat
+#######################################
+
+Dinner can dabao if not hungry or eat there
+
+Riddle 6: “Where Stories Return Home”
+
+This hints the final destination.
+
+“We’ve travelled from sunlight to clay to colour.
+Now guess the place
+where every story we make together
+quietly returns to rest.”
+
+Answer: Binjai
+
+Reward: Unlock Stage 7
+
+#######################################
+🎁 STAGE 7 — Binjai Hall Surprise Gift Session
+#######################################
+
+Final room, soft music, surprise gift. Heartwarming ending.

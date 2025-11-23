@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Birthday Adventure Game</title>
+<style>
+/* Mobile-first styling for iPhone 12 */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: #d0e7f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+#game-container {
+    width: 375px; /* iPhone 12 width */
+    max-width: 95%;
+    background: #ffffff;
+    border-radius: 15px;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+h2 { font-size: 20px; margin-bottom: 10px; }
+
+.riddle-text {
+    white-space: pre-line; /* preserve line breaks */
+    font-size: 16px;
+    margin: 15px 0;
+    line-height: 1.4;
+}
+
+.items { display: flex; justify-content: space-around; margin-top: 15px; flex-wrap: wrap; }
+.item { font-size: 35px; cursor: pointer; margin: 5px; transition: transform 0.2s; }
+.item:hover { transform: scale(1.2); }
+
+#checklist { font-weight: bold; margin-top: 10px; font-size: 16px; }
+
+input[type="text"] { padding: 6px; font-size: 16px; width: 90%; border-radius: 6px; border: 1px solid #ccc; margin-top: 10px; }
+
+button {
+    padding: 12px 20px;
+    font-size: 16px;
+    margin-top: 10px;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    background: #a7d0f5;
+    color: #fff;
+    transition: 0.2s;
+}
+button:hover { background: #87c6f4; transform: scale(1.05); }
+
+/* Map Interface */
+#map-container {
+    position: relative;
+    margin-top: 15px;
+}
+#map-container img {
+    width: 100%;
+    border-radius: 10px;
+}
+.map-marker {
+    position: absolute;
+    cursor: pointer;
+    font-size: 30px;
+    transition: transform 0.2s;
+}
+.map-marker:hover { transform: scale(1.3); }
+</style>
+</head>
+<body>
+
+<div id="game-container"></div>
+
+<script>
+const stages = [
+    {
+        id: 1,
+        title: "🌅 STAGE 1 — Wake Up Quest",
+        items: ["🪥", "👕", "⌚", "👟"],
+        riddle: {
+            question: `Good morning my love! Your motorbike is waiting for you.\n 
+            But before you ride off… the calendar has a little question for you:\n  
+What age are you turning today?`,
+            answer: "22"
+        },
+        map: {
+            img: "images/singapore_map1.jpg",
+            nextLocation: { top: "30%", left: "50%", label: "🏍️ Stage 2", link: "https://maps.app.goo.gl/PG8BDqgHpoAgSTm39" }
+        }
+    },
+    {
+        id: 2,
+        title: "🏍️ STAGE 2 — Motorbike Meet-Up",
+        riddle: {
+            question: `Some milestones are historic,\n
+and some moments are just ours.\n
+Can you name the first Asian country\n
+that legalized love for all?`,
+            answer: "Taiwan"
+        },
+        map: {
+            img: "images/singapore_map1.jpg",
+            nextLocation: { top: "35%", left: "55%", label: "🍜 Stage 3", 
+            link: "https://maps.app.goo.gl/AYsHQ2M9yetTexvX8" }
+        }
+    },
+    {
+        id: 3,
+        title: "🍜 STAGE 3 — Brunch @ Da Xi, Plaza Sing",
+        riddle: {
+            question: `Where movies come alive on a silver screen,\n
+and laughter echoes in the cozy cinema scene.\n
+Just steps away from our brunch,\n
+look for the place where stories play in frames.`,
+            answer: "The Cathay"
+        },
+        map: {
+            img: "images/singapore_map1.jpg",
+            nextLocation: { top: "40%", left: "60%", label: "🎨 Stage 4", 
+            link: "https://maps.app.goo.gl/GRoAe8zXpuj7L2Em9" }
+        }
+    },
+    {
+        id: 4,
+        title: "🎨 STAGE 4 — Pottery at CocoArt",
+        riddle: {
+            question: `Clay is shaped by touch…\n
+but what gives it colour, life, and identity?\n
+What’s the next magic step?`,
+            answer: "Paint"
+        },
+        map: {
+            img: "images/singapore_map1.jpg",
+            nextLocation: { top: "40%", left: "60%", label: "🎨 Stage 4", 
+            link: "https://maps.app.goo.gl/Xj4QZ2CrkWEPWKkF6" }
+        }
+    },
+    {
+        id: 5,
+        title: "🏺 STAGE 5 — Collect Pottery",
+        riddle: {
+            question: `The cups look different — shapes, glaze, lines…\n
+but there’s one thing they’ll always share.\n
+What hidden mark do both our pottery cups have?`,
+            answer: "D+F"
+        },
+        map: {
+            img: "images/singapore_map1.jpg",
+            nextLocation: { top: "40%", left: "60%", label: "🎨 Stage 4", 
+            link: "https://maps.app.goo.gl/G874hdhyaMDjtLRK6" }
+        }
+    },
+    {
+        id: 6,
+        title: "🍗 STAGE 6 — Dinner @ Bored Tacos",
+        riddle: {
+            question: `We’ve travelled from sunlight to clay to colour.\n
+Now guess the place\n
+where every story we make together\n
+quietly returns to rest.`,
+            answer: "Binjai"
+        },
+        map: {
+            img: "images/singapore_map1.jpg",
+            nextLocation: { top: "40%", left: "60%", label: "🎨 Stage 4", 
+            link: "https://maps.app.goo.gl/eyCNSVBmjkgG6E8Z7" }
+        }
+    },
+    {
+        id: 7,
+        title: "🎁 STAGE 7 — Binjai Hall Surprise Gift",
+        review: true
+    }
+];
+let currentStage = 0;
+const container = document.getElementById("game-container");
+
+function loadStage(stageIndex) {
+    const stage = stages[stageIndex];
+    container.innerHTML = `<h2>${stage.title}</h2>`;
+
+    if(stage.items){
+        container.innerHTML += `<div class="items"></div><div id="checklist">Collected: 0/${stage.items.length}</div>`;
+        const itemsDiv = container.querySelector(".items");
+        let collected = 0;
+        stage.items.forEach(emoji => {
+            const span = document.createElement("span");
+            span.classList.add("item");
+            span.textContent = emoji;
+            span.onclick = () => {
+                span.style.visibility = "hidden";
+                collected++;
+                document.getElementById("checklist").textContent = `Collected: ${collected}/${stage.items.length}`;
+                if(collected === stage.items.length) showRiddle(stage.riddle);
+            };
+            itemsDiv.appendChild(span);
+        });
+    } else {
+        showRiddle(stage.riddle);
+    }
+}
+
+function showRiddle(riddle){
+    container.innerHTML += `<div class="riddle-text">${riddle.question}</div>
+        <input type="text" id="answer" placeholder="Your answer">
+        <br><button onclick="checkAnswer()">Submit</button>
+        <p id="feedback"></p>`;
+}
+
+function checkAnswer(){
+    const riddle = stages[currentStage].riddle;
+    const input = document.getElementById("answer").value.trim();
+    const feedback = document.getElementById("feedback");
+    if(input.toLowerCase() === riddle.answer.toLowerCase()){
+        feedback.textContent = "Correct! ✅";
+        showMap(stages[currentStage].map);
+    } else {
+        feedback.textContent = "Try again ❌";
+    }
+}
+
+function showMap(mapData){
+    container.innerHTML = `<h2>Map - Stage ${currentStage + 1}</h2>
+        <div id="map-container">
+            <img src="${mapData.img}">
+        </div>
+        <p>Click on the next stage to unlock it!</p>`;
+
+    const mapContainer = document.getElementById("map-container");
+    const marker = document.createElement("div");
+    marker.classList.add("map-marker");
+    marker.textContent = mapData.nextLocation.label;
+    marker.style.top = mapData.nextLocation.top;
+    marker.style.left = mapData.nextLocation.left;
+    marker.onclick = () => window.open(mapData.nextLocation.link, "_blank");
+
+    mapContainer.appendChild(marker);
+}
+
+// Load first stage
+loadStage(currentStage);
+</script>
+
+</body>
+</html>
