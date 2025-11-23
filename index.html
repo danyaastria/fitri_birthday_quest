@@ -112,16 +112,49 @@ button:hover {
 }
 
 /* Sprite */
+/* sprite movement */
 #sprite {
     position: absolute;
-    width: 60px;
-    height: 60px;
-    border-radius: 999px;
-    border: 3px solid white;
-    box-shadow: 0 0 8px rgba(0,0,0,0.4);
-    left: -80px; /* offscreen */
-    top: 45%;
-    transition: left 1.8s ease-in-out;
+    width: 28px;
+    height: 28px;
+    background-image: url("images/herface.jpeg");
+    background-size: cover;
+    background-position: center;
+    border-radius: 50%;
+    border: 2px solid white;
+    transform: translate(-50%, -50%);
+    transition: all 0.4s ease;
+    z-index: 5;
+}
+
+/* map zoom animation */
+.map-zoom-in {
+    animation: zoomIn 1.2s ease forwards;
+}
+
+@keyframes zoomIn {
+    0% { transform: scale(0.8); opacity: 0.3; }
+    50% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1); }
+}
+
+/* hotspot marker */
+.hotspot {
+    position: absolute;
+    padding: 8px 12px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    font-size: 18px;
+    opacity: 0;
+    animation: fadeIn 0.8s ease forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translate(-50%, -45%); }
+    to { opacity: 1; transform: translate(-50%, -50%); }
 }
 </style>
 </head>
@@ -142,9 +175,21 @@ What age are you turning today?`,
             answer: "22"
         },
         map: {
-            img: "images/singapore_map1.jpg",
-            nextLocation: { top: "30%", left: "50%", label: "🏍️ Stage 2", link: "https://maps.app.goo.gl/PG8BDqgHpoAgSTm39" }
-        }
+    img: "images/stage1_blk546.png",
+    movement: {
+        path: [ {x: 10, y: 50}, {x: 50, y: 50} ], // example
+        duration: 2000
+    },
+    zoom: "in",
+    message: "Go to your motorbike!",
+    hotspot: {
+        x: 50,
+        y: 60,
+        label: "🏍️ Motorbike",
+        link: "https://maps.app.goo.gl/PG8BDqgHpoAgSTm39"
+    }
+}
+
     },
     {
         id: 2,
@@ -157,10 +202,23 @@ that legalized love for all?`,
             answer: "Taiwan"
         },
         map: {
-            img: "images/singapore_map1.jpg",
-            nextLocation: { top: "35%", left: "55%", label: "🍜 Stage 3", 
-            link: "https://maps.app.goo.gl/AYsHQ2M9yetTexvX8" }
-        }
+    img: "images/singapore_map1.jpg",
+    message: "Ride to Plaza Singapura!",
+    movement: {
+        path: [
+            { x: 5,  y: 50 },   // START: Far west middle
+            { x: 50, y: 66 }    // END: Center, 4/6 from top
+        ],
+        duration: 2000
+    },
+    hotspot: {
+        x: 52,
+        y: 68,
+        label: "🍜 Da Xi @ Plaza Sing",
+        link: "https://maps.app.goo.gl/AYsHQ2M9yetTexvX8"
+    }
+}
+
     },
     {
         id: 3,
@@ -290,8 +348,8 @@ function checkAnswer() {
     const feedback = document.getElementById("feedback");
 
     if (user.toLowerCase() === riddle.answer.toLowerCase()) {
-        feedback.textContent = "Correct! 🎉";
-        showMap(stages[currentStage].map);
+    feedback.textContent = "Correct! 🎉";
+    loadMapStage(stages[currentStage]);
     } else {
         feedback.textContent = "Try again ❤️";
     }
@@ -300,64 +358,79 @@ function checkAnswer() {
 /* -----------------------------
      MAP + SPRITE SLIDE
 ------------------------------*/
-
-function showMap(mapData) {
-    container.innerHTML = `
-        <h2>Map Unlocked!</h2>
-        <div id="map-container">
-            <img src="${mapData.img}">
-            <img id="sprite" src="images/herface.jpeg">
-        </div>
-        <p>Driving to the next location…</p>
-    `;
-
-    const sprite = document.getElementById("sprite");
-
-    setTimeout(() => {
-        sprite.style.left = mapData.nextLocation.left;
-    }, 300);
-
-    sprite.addEventListener("transitionend", () => {
-        showMapMarker(mapData);
-    });
-}
-
-function showMapMarker(mapData) {
-    const mapContainer = document.getElementById("map-container");
-
-    // Create marker
-    const marker = document.createElement("div");
-    marker.classList.add("map-marker");
-
-    // Position
-    marker.style.top = mapData.nextLocation.top;
-    marker.style.left = mapData.nextLocation.left;
-
-    // Label
-    marker.textContent = mapData.nextLocation.label;
-
-    // FIX: iOS-safe navigation
-    marker.onclick = () => {
-        window.location.href = mapData.nextLocation.link;
-    };
-
-    mapContainer.appendChild(marker);
-
-    // Add next stage button *outside the map container*
-    const nextButton = document.createElement("button");
-    nextButton.textContent = "Go to Next Stage ➜";
-    nextButton.onclick = goNextStage;
-
-    container.appendChild(nextButton);
-}
-
-
 function goNextStage() {
     currentStage++;
     loadStage(currentStage);
 }
 
 loadStage(currentStage);
+
+function loadMapStage(stage) {
+    container.innerHTML = `
+        <h2>📍 Location Unlocked</h2>
+        <p>${stage.map.message}</p>
+        <div id="map-container" style="position: relative;">
+            <img id="map-img" src="${stage.map.img}" class="map-zoom-in" style="width:100%; border-radius:12px;">
+            <div id="sprite"></div>
+        </div>
+    `;
+
+    playMapAnimation(stage);
+}
+
+function playMapAnimation(stage) {
+    const sprite = document.getElementById("sprite");
+
+    if (!stage.map.movement) {
+        // no movement → just show hotspot
+        setTimeout(() => {
+            showHotspot(stage.map.hotspot);
+        }, 1200);
+        return;
+    }
+
+    // Start position (first path coordinate)
+    const start = stage.map.movement.path[0];
+    sprite.style.left = start.x + "%";
+    sprite.style.top = start.y + "%";
+
+    // End position (last path coordinate)
+    const end = stage.map.movement.path[1];
+
+    setTimeout(() => {
+        sprite.style.transition = `all ${stage.map.movement.duration}ms ease`;
+        sprite.style.left = end.x + "%";
+        sprite.style.top = end.y + "%";
+    }, 300);
+
+    // Show hotspot after movement finishes
+    setTimeout(() => {
+        showHotspot(stage.map.hotspot);
+    }, stage.map.movement.duration + 500);
+}
+
+function showHotspot(loc) {
+    const mapContainer = document.getElementById("map-container");
+
+    const hotspot = document.createElement("div");
+    hotspot.classList.add("hotspot");
+    hotspot.style.left = loc.x + "%";
+    hotspot.style.top = loc.y + "%";
+    hotspot.textContent = loc.label;
+
+    hotspot.addEventListener("click", () => {
+    window.open(loc.link, "_blank");
+    });
+
+    mapContainer.appendChild(hotspot);
+
+    const nextButton = document.createElement("button");
+    nextButton.textContent = "Go to Next Stage ➜";
+    nextButton.onclick = goNextStage;
+    container.appendChild(nextButton);
+
+}
+
 </script>
 
 </body>
