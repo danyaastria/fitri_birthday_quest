@@ -87,6 +87,36 @@ button:hover {
     transform: scale(1.05); 
 }
 
+/* Intro Screen */
+#intro-screen {
+    text-align: center;
+    padding: 20px;
+}
+
+#intro-screen img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    margin-bottom: 15px;
+}
+
+#intro-screen h1 {
+    font-size: 22px;
+    margin-bottom: 10px;
+    color: #3d6fa5;
+}
+
+#intro-text {
+    font-size: 16px;
+    line-height: 1.4;
+    white-space: pre-line;
+    margin-bottom: 20px;
+    color: #4b4b4b;
+}
+
 /* Map Interface */
 #map-container {
     position: relative;
@@ -152,6 +182,72 @@ button:hover {
     animation: fadeIn 0.8s ease forwards;
 }
 
+/* ENDING SCREEN */
+#ending-screen {
+    text-align: center;
+    padding: 20px;
+}
+
+#ending-screen h1 {
+    font-size: 24px;
+    color: #3d6fa5;
+    margin-bottom: 10px;
+}
+
+#ending-screen p {
+    color: #4b4b4b;
+    line-height: 1.4;
+    font-size: 16px;
+}
+
+/* Star Rating */
+.star-rating {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.star {
+    font-size: 34px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.star:hover {
+    transform: scale(1.2);
+}
+
+.star.selected {
+    transform: scale(1.25);
+}
+
+/* Review box */
+#review-box {
+    width: 90%;
+    max-width: 300px;
+    height: 90px;
+    border: 2px solid #a9c9e8;
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 14px;
+    outline: none;
+    margin-top: 10px;
+}
+
+/* Submit button */
+#submit-review {
+    margin-top: 20px;
+    background: #4d8fcc;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 12px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
+
 @keyframes fadeIn {
     from { opacity: 0; transform: translate(-50%, -45%); }
     to { opacity: 1; transform: translate(-50%, -50%); }
@@ -163,37 +259,64 @@ button:hover {
 <div id="game-container"></div>
 
 <script>
-const stages = [
+const levels = [
     {
         id: 1,
-        title: "🌅 STAGE 1 — Wake Up Quest",
-        items: ["🪥", "👕", "⌚", "👟"],
+        title: "🌅 LEVEL 1: Wake Up Quest",
+        items: ["🚿", "🪥", "👕", "⌚", "👟"],
         riddle: {
-            question: `Good morning my love! Your motorbike is waiting for you.\n 
-            But before you ride off… the calendar has a little question for you:\n  
+            question: `Your motorbike is waiting for you.\n 
+But before you ride off…\n
+The calendar has a little question for you:\n  
 What age are you turning today?`,
             answer: "22"
         },
         map: {
-    img: "images/stage1_blk546.png",
-    movement: {
-        path: [ {x: 10, y: 50}, {x: 50, y: 50} ], // example
-        duration: 2000
-    },
-    zoom: "in",
-    message: "Go to your motorbike!",
-    hotspot: {
-        x: 50,
-        y: 60,
-        label: "🏍️ Motorbike",
-        link: "https://maps.app.goo.gl/PG8BDqgHpoAgSTm39"
-    }
-}
-
+            img: "images/stage1_blk546.png",
+            movement: {
+                path: [ {x: 10, y: 50}, {x: 50, y: 50} ],
+                duration: 2000
+            },
+            zoom: "in",
+            message: "Go to your motorbike!",
+            hotspot: {
+                x: 50,
+                y: 60,
+                label: "🏍️ Motorbike",
+                link: "https://maps.app.goo.gl/PG8BDqgHpoAgSTm39"
+            }
+        }
     },
     {
         id: 2,
-        title: "🏍️ STAGE 2 — Motorbike Meet-Up",
+        title: "🏍️ LEVEL 2: Motorbike Meet-Up",
+        riddle: {
+            question: `Your girlfriend just got her license, hooray,\n
+She can’t wait to hit the road with you.\n
+Which bike is she riding today?`,
+            answer: "Kawasaki"
+        },
+        map: {
+            img: "images/singapore_map1.jpg",
+            message: "Meet her bike!",
+            movement: {
+                path: [
+                    { x: 5,  y: 50 },
+                    { x: 60, y: 54 }
+                ],
+                duration: 2000
+            },
+            hotspot: {
+                x: 52,
+                y: 68,
+                label: "🏍️ Collect bike",
+                link: "https://maps.app.goo.gl/b9oafPxLvayraaph9"
+            }
+        }
+    },
+    {
+        id: 3,
+        title: "🍜 LEVEL 3: Brunch Time!",
         riddle: {
             question: `Some milestones are historic,\n
 and some moments are just ours.\n
@@ -202,43 +325,54 @@ that legalized love for all?`,
             answer: "Taiwan"
         },
         map: {
-    img: "images/singapore_map1.jpg",
-    message: "Ride to Plaza Singapura!",
-    movement: {
-        path: [
-            { x: 5,  y: 50 },   // START: Far west middle
-            { x: 50, y: 66 }    // END: Center, 4/6 from top
-        ],
-        duration: 2000
-    },
-    hotspot: {
-        x: 52,
-        y: 68,
-        label: "🍜 Da Xi @ Plaza Sing",
-        link: "https://maps.app.goo.gl/AYsHQ2M9yetTexvX8"
-    }
-}
-
+            img: "images/level3_toPlazaSing.png",
+            message: "Ride to Plaza Singapura!",
+            movement: {
+                path: [
+                    { x: 80,  y:10 },
+                    { x: 40, y: 75 }
+                ],
+                duration: 2000
+            },
+            hotspot: {
+                x: 52,
+                y: 68,
+                label: "🍜 Plaza Sing",
+                link: "https://maps.app.goo.gl/AYsHQ2M9yetTexvX8"
+            }
+        }
     },
     {
-        id: 3,
-        title: "🍜 STAGE 3 — Brunch @ Da Xi, Plaza Sing",
+        id: 4,
+        title: "🏺 LEVEL 4: Our Main Activity",
         riddle: {
             question: `Where movies come alive on a silver screen,\n
 and laughter echoes in the cozy cinema scene.\n
 Just steps away from our brunch,\n
 look for the place where stories play in frames.`,
-            answer: "The Cathay"
+            answer: "Cathay"
         },
         map: {
-            img: "images/singapore_map1.jpg",
-            nextLocation: { top: "40%", left: "60%", label: "🎨 Stage 4", 
-            link: "https://maps.app.goo.gl/GRoAe8zXpuj7L2Em9" }
+            img: "images/level4_totheCathay.png",
+            message: "Walk to our main activity!",
+            movement: {
+                path: [
+                    { x: 5,  y: 50 },
+                    { x: 50, y: 66 }
+                ],
+                duration: 2000
+            },
+            hotspot: {
+                x: 52,
+                y: 68,
+                label: "🏺 The Cathay",
+                link: "https://maps.app.goo.gl/GRoAe8zXpuj7L2Em9"
+            }
         }
     },
     {
-        id: 4,
-        title: "🎨 STAGE 4 — Pottery at CocoArt",
+        id: 5,
+        title: "🎨 LEVEL 5: Finishing What We Started",
         riddle: {
             question: `Clay is shaped by touch…\n
 but what gives it colour, life, and identity?\n
@@ -246,29 +380,49 @@ What’s the next magic step?`,
             answer: "Paint"
         },
         map: {
-            img: "images/singapore_map1.jpg",
-            nextLocation: { top: "40%", left: "60%", label: "🎨 Stage 4", 
-            link: "https://maps.app.goo.gl/Xj4QZ2CrkWEPWKkF6" }
-        }
-    },
-    {
-        id: 5,
-        title: "🏺 STAGE 5 — Collect Pottery",
-        riddle: {
-            question: `The cups look different — shapes, glaze, lines…\n
-but there’s one thing they’ll always share.\n
-What hidden mark do both our pottery cups have?`,
-            answer: "D+F"
-        },
-        map: {
-            img: "images/singapore_map1.jpg",
-            nextLocation: { top: "40%", left: "60%", label: "🎨 Stage 4", 
-            link: "https://maps.app.goo.gl/G874hdhyaMDjtLRK6" }
+            img: "images/stage1_blk546.png",
+            movement: {
+                path: [ {x: 10, y: 50}, {x: 50, y: 50} ],
+                duration: 2000
+            },
+            zoom: "in",
+            message: "🎨 We have something to collect...",
+            hotspot: {
+                x: 50,
+                y: 60,
+                label: "🎨 Orchard Central",
+                link: "https://maps.app.goo.gl/Xj4QZ2CrkWEPWKkF6"
+            }
         }
     },
     {
         id: 6,
-        title: "🍗 STAGE 6 — Dinner @ Bored Tacos",
+        title: "🌮 LEVEL 6: D for Dinner?",
+        riddle: {
+            question: `The cups look different — shapes, glaze, lines…\n
+but there’s one thing they’ll always share.\n
+What hidden mark do both our pottery cups have?`,
+            answer: "D+F" // accept "F+D" as alternate in code if needed
+        },
+        map: {
+            img: "images/stage1_blk546.png",
+            movement: {
+                path: [ {x: 10, y: 50}, {x: 50, y: 50} ],
+                duration: 2000
+            },
+            zoom: "in",
+            message: "🌮 Dinner Time!",
+            hotspot: {
+                x: 50,
+                y: 60,
+                label: "🌮 Dinner",
+                link: "https://maps.app.goo.gl/G874hdhyaMDjtLRK6"
+            }
+        }
+    },
+    {
+        id: 7,
+        title: "🏠 LEVEL 7: Are You Tired Yet?..",
         riddle: {
             question: `We’ve travelled from sunlight to clay to colour.\n
 Now guess the place\n
@@ -277,37 +431,104 @@ quietly returns to rest.`,
             answer: "Binjai"
         },
         map: {
-            img: "images/singapore_map1.jpg",
-            nextLocation: { top: "40%", left: "60%", label: "🎨 Stage 4", 
-            link: "https://maps.app.goo.gl/eyCNSVBmjkgG6E8Z7" }
+            img: "images/stage1_blk546.png",
+            movement: {
+                path: [ {x: 10, y: 50}, {x: 50, y: 50} ],
+                duration: 2000
+            },
+            zoom: "in",
+            message: "🏠 Back to home!",
+            hotspot: {
+                x: 50,
+                y: 60,
+                label: "🏠 Binjai",
+                link: "https://maps.app.goo.gl/eyCNSVBmjkgG6E8Z7"
+            }
         }
     },
     {
-        id: 7,
-        title: "🎁 STAGE 7 — Binjai Hall Surprise Gift",
-        review: true
-    }
+      id: 8,
+      title: "🎁 LEVEL 8: Mystery Awaits",
+      map: {
+          img: "images/stage1_blk546.png",
+          movement: {
+              path: [ {x: 10, y: 50}, {x: 50, y: 50} ],
+              duration: 2000
+          },
+          zoom: "in",
+          message: "🎁 Find the surprise!",
+          hotspot: {
+              x: 50,
+              y: 60,
+              label: "🎁 Binjai Hall",
+              link: "javascript:loadEndingScreen()"
+          }
+      }
+  }
 ];
 
 let currentStage = 0;
 const container = document.getElementById("game-container");
 
+// -------------------------
+// INTRO SCREEN
+// -------------------------
+function loadIntro() {
+    container.innerHTML = `
+        <div id="intro-screen">
+            <img src="images/herface.jpeg" alt="sprite">
+            <h1>Good morning, birthday girl 💙</h1>
+            <div id="intro-text">
+Today is your day — your 22nd birthday.
+But instead of a normal celebration…
+
+We're doing a little adventure game.
+
+You’ll do fun activities 🎯 
+Solve cute riddles 🧩  
+Follow the map 🗺️  
+And travel with your girlfriend ❤️
+
+Ready to start your birthday quest?
+            </div>
+            <button onclick="startGame()">Start Game 🎉</button>
+        </div>
+    `;
+}
+
+function startGame() {
+    currentStage = 0;
+    loadStage(0);
+}
+
 /* -----------------------------
      LOAD A STAGE
 ------------------------------*/
 function loadStage(i) {
-    const stage = stages[i];
+    const stage = levels[i]; 
+    // ALWAYS show title
     container.innerHTML = `<h2>${stage.title}</h2>`;
 
     if (stage.items) {
-        container.innerHTML += `
-            <div class="items"></div>
-            <div id="checklist">Collected: 0/${stage.items.length}</div>
-        `;
-        
-        const itemsDiv = container.querySelector(".items");
-        let collected = 0;
+        // Instruction only for items
+        const instruction = document.createElement("p");
+        instruction.style.fontSize = "16px";
+        instruction.style.marginBottom = "10px";
+        instruction.textContent = "Complete these morning activities. Click each one only when you've done it!";
+        container.appendChild(instruction);
 
+        // Items container
+        const itemsDiv = document.createElement("div");
+        itemsDiv.classList.add("items");
+        container.appendChild(itemsDiv);
+
+        // Checklist
+        const checklist = document.createElement("div");
+        checklist.id = "checklist";
+        checklist.textContent = `Collected: 0/${stage.items.length}`;
+        container.appendChild(checklist);
+
+        let collected = 0;
         stage.items.forEach(emoji => {
             const span = document.createElement("span");
             span.classList.add("item");
@@ -316,17 +537,21 @@ function loadStage(i) {
             span.onclick = () => {
                 span.style.visibility = "hidden";
                 collected++;
-                document.getElementById("checklist").textContent = 
-                    `Collected: ${collected}/${stage.items.length}`;
+                checklist.textContent = `Collected: ${collected}/${stage.items.length}`;
 
-                if (collected === stage.items.length) showRiddle(stage.riddle);
+                if (collected === stage.items.length) {
+                    // ONLY replace items + checklist with riddle
+                    showRiddle(stage.riddle);
+                }
             };
 
             itemsDiv.appendChild(span);
         });
 
-    } else {
+    } else if (stage.riddle) {
         showRiddle(stage.riddle);
+    } else {
+        loadMapStage(stage);
     }
 }
 
@@ -334,7 +559,11 @@ function loadStage(i) {
      RIDDLE
 ------------------------------*/
 function showRiddle(riddle) {
-    container.innerHTML += `
+    // KEEP the title (h2), replace everything else
+    const title = container.querySelector("h2").outerHTML;
+
+    container.innerHTML = `
+        ${title}
         <div class="riddle-text">${riddle.question}</div>
         <input type="text" id="answer" placeholder="Your answer">
         <button onclick="checkAnswer()">Submit</button>
@@ -344,26 +573,23 @@ function showRiddle(riddle) {
 
 function checkAnswer() {
     const user = document.getElementById("answer").value.trim();
-    const riddle = stages[currentStage].riddle;
+    const riddle = levels[currentStage].riddle;
     const feedback = document.getElementById("feedback");
 
     if (user.toLowerCase() === riddle.answer.toLowerCase()) {
-    feedback.textContent = "Correct! 🎉";
-    loadMapStage(stages[currentStage]);
+        feedback.textContent = "Correct! 🎉";
+
+        loadMapStage(levels[currentStage]); // show map of current stage
     } else {
         feedback.textContent = "Try again ❤️";
     }
 }
 
+
 /* -----------------------------
      MAP + SPRITE SLIDE
 ------------------------------*/
-function goNextStage() {
-    currentStage++;
-    loadStage(currentStage);
-}
-
-loadStage(currentStage);
+loadIntro();
 
 function loadMapStage(stage) {
     container.innerHTML = `
@@ -409,6 +635,15 @@ function playMapAnimation(stage) {
     }, stage.map.movement.duration + 500);
 }
 
+function goNextStage() {
+    currentStage++;
+    if (currentStage < levels.length) {
+        loadStage(currentStage);
+    } else {
+        loadEndingScreen();
+    }
+}
+
 function showHotspot(loc) {
     const mapContainer = document.getElementById("map-container");
 
@@ -425,11 +660,78 @@ function showHotspot(loc) {
     mapContainer.appendChild(hotspot);
 
     const nextButton = document.createElement("button");
-    nextButton.textContent = "Go to Next Stage ➜";
+    nextButton.textContent = "Go to Next Level ➜";
     nextButton.onclick = goNextStage;
     container.appendChild(nextButton);
 
 }
+
+// ---------------------------
+// ENDING + RATING + REVIEW
+// ---------------------------
+
+let selectedStars = 0;
+
+function loadEndingScreen() {
+    container.innerHTML = `
+        <div id="ending-screen">
+            <h1>🎉 Quest Completed!</h1>
+            <p>You cleared all 7 levels.<br>
+            You travelled, solved riddles, collected items — and hopefully had fun.</p>
+
+            <p style="margin-top:15px;">Rate your birthday quest ⭐</p>
+
+            <div class="star-rating">
+                ${[1,2,3,4,5].map(n => 
+                    `<span class="star" data-value="${n}">★</span>`
+                ).join("")}
+            </div>
+
+            <textarea id="review-box" placeholder="Leave a comment (optional)…"></textarea><br>
+
+            <button id="submit-review" onclick="submitReview()">Submit Review</button>
+        </div>
+    `;
+
+    // star selection
+    document.querySelectorAll(".star").forEach(star => {
+        star.addEventListener("click", () => {
+            selectedStars = star.dataset.value;
+
+            document.querySelectorAll(".star").forEach(s => 
+                s.classList.remove("selected")
+            );
+
+            for (let i = 0; i < selectedStars; i++) {
+                document.querySelectorAll(".star")[i].classList.add("selected");
+            }
+        });
+    });
+}
+
+function submitReview() {
+    const comment = document.getElementById("review-box").value.trim();
+
+    container.innerHTML = `
+        <div id="ending-screen">
+            <h1>💙 Thank You</h1>
+            <p>Your rating: ${"★".repeat(selectedStars)}${"☆".repeat(5 - selectedStars)}</p>
+            <p style="margin-top:10px;">Your review has been recorded.</p>
+
+            <p style="margin-top:20px; font-size:15px;">
+            I hope you liked your birthday quest.<br>
+            Thank you for playing, and for being my awesome girlfriend.
+            </p>
+
+            <button style="margin-top:25px;" onclick="restartGame()">Play Again?</button>
+        </div>
+    `;
+}
+
+function restartGame() {
+    loadIntro();
+}
+
 
 </script>
 
